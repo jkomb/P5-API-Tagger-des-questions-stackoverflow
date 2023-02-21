@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Taggez vos posts pour StacOverFlow sans efforts !</a></title>
+</head>
+
+<body>
+
+    <h1 style="text-align:center;color: rgb(0, 128, 255);font-family: inherit;">Prédicition de tags pour des questions à poser sur le site <a href="https://stackoverflow.com/">STACKOVERFLOW</a></h1><br><br>
+    <hr style="color: rgb(0, 0, 0);">
+    <h2 style="color: rgb(0, 0, 0);">Veuillez entrer ci-dessous les informations qui nous permettront de vous aider à tagger votre post...</h2><br>
+    <h3 style="color: rgb(192,192,192);">Un post bien avec les bons tags c'est un post qui a plus de chances d'être vu par les personnes coméptentes et donc de recevoir des réponses pertinentes !!</h3><br>
+    <h4 style="color: rgb(0,0,0);">Pour générer les tags, veuillez saisir ci-dessous le titre de votre post ainsi que votre question (soyez précis et exhaustif dans la description de votre problème et son contexte) : </h4><br>
+
+    <form style="margin-top: 50px;padding-left:200px;" action="{{url_for('predict')}}" method="post">
+
+        <input type="text" placeholder="Saisissez le titre de votre post" required='required' name="title_input">
+
+        <br><br>
+
+        <input type="text" placeholder="Saisissez votre question" required='required' name="post_input">
+
+        <br><br>
+
+        <button style="margin-left:00px" type="submit" class="btn btn-outline-danger btn-lg">Génér les tags !</button><br><br>
+
+        <b style="color: rgb(0, 0, 0);font-size: 22px;">{{statement}}</b>
+
+    </form>
+    <br>
+
+</body>
+
+</html>
