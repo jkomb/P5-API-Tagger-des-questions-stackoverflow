@@ -5,21 +5,20 @@
 import pickle
 import contractions
 import re
-import pandas as pd
 from bs4 import BeautifulSoup
+import gensim
 
 import spacy
 
 # Chargement des modèles
 
-bert = pickle.load(open('models/bert.pkl', 'rb'))
-
-sup_model = pickle.load(open('models/sup_model_fitted.pkl', 'rb'))
 unsup_model = pickle.load(open('models/unsup_model_fitted.pkl', 'rb'))
 
-mlb = pickle.load(open('models/mlb_comp.pkl', 'rb'))
-
-sp = spacy.load('en_core_web_sm')
+try:
+    sp = spacy.load("en_core_web_md")
+except:
+    spacy.cli.download("en_core_web_md")
+    sp = spacy.load("en_core_web_md")
 
 # Chargement/définition des variables utiles
 
@@ -103,7 +102,7 @@ def pos_tag_nouns(tokens):
 # Définition des fonctions principales
 
 
-def unsup_preprocess_from_raw_text(inputs):
+def preprocess_from_raw_text(inputs):
     """
         But :
             Procéder au pré-traitement des données brutes issues de la saisie des utilisateurs de l'API
@@ -127,16 +126,8 @@ def unsup_preprocess_from_raw_text(inputs):
     return cleaned_inputs
 
 
-def sup_preprocess_from_raw_text(inputs):
 
-    cleaned_inputs = unsup_preprocess_from_raw_text(inputs)
-    cleaned_inputs = cleaned_inputs[:256]
-    encoded_inputs = bert.encode(cleaned_inputs)
-
-    return encoded_inputs
-
-
-def unsup_predictions(cleaned_inputs):
+def predictions(cleaned_inputs):
     """
         But:
             Prédire les tags à partir du modèle non-supervisé en considérant tous les thèmes.
@@ -161,20 +152,3 @@ def unsup_predictions(cleaned_inputs):
 
     return relevant_tags
 
-
-def sup_predictions(bert_encoded_input):
-    """
-        But:
-            Prédire les tags à partir du modèle supervisé
-        Argument:
-            bert_encoded_input : vecteur généré par le modèle BERT à partir de liste de tokens issue
-                                 du nettoyage de la saisie de l'utilisateur
-        Valeur retournée:
-            tags_pred : liste des tags prédits
-    """
-    sup_features = pd.DataFrame(bert_encoded_input)
-    y_pred = sup_model.predict(sup_features)
-    tags_pred = mlb.inverse_transform(y_pred)
-    tags_pred = list(tags_pred[0])
-
-    return tags_pred

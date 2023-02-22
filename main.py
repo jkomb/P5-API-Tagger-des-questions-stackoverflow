@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template
-from app.utils import unsup_preprocess_from_raw_text, sup_preprocess_from_raw_text, unsup_predictions, sup_predictions
+from app.utils import preprocess_from_raw_text, predictions
 
 
 app = Flask(__name__)
@@ -17,17 +17,12 @@ def predict():
     inputs = list(inputs.values())
     inputs = ' '.join(inputs)
 
-    unsup_features = unsup_preprocess_from_raw_text(inputs)
-    sup_features = sup_preprocess_from_raw_text(inputs)
+    features = preprocess_from_raw_text(inputs)
 
-    unsup_tags = unsup_predictions(unsup_features)
-    sup_tags = sup_predictions(sup_features)
+    tags = predictions(features)
+    tags = ' '.join(tags)
 
-    final_tags = unsup_tags + sup_tags
-    final_tags = list(set(final_tags))
-    pred_tags = ', '.join(final_tags)
-
-    if len(unsup_tags) == 0 and len(sup_tags) == 0:
+    if len(tags) == 0:
 
         message_prediction = "Nous sommes navrés, mais nous n'avons pas pu générer de tags... " \
                              "Essayer d'être plus spécifique dans la description de votre problème " \
@@ -36,7 +31,7 @@ def predict():
 
     else:
 
-        message_prediction = f"Tags générés : {pred_tags}\n." \
+        message_prediction = f"Tags générés : {tags}\n." \
 
     return render_template('api_page.html', message_prediction=message_prediction)
 
