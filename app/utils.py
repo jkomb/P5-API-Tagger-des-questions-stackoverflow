@@ -10,13 +10,6 @@ from bs4 import BeautifulSoup
 
 import spacy
 
-
-#import nltk
-
-#from nltk.tokenize import word_tokenize
-#from nltk.corpus import stopwords, wordnet, brown
-#from nltk.stem import WordNetLemmatizer
-
 # Chargement des modèles
 
 bert = pickle.load(open('models/bert.pkl', 'rb'))
@@ -31,16 +24,6 @@ sp = spacy.load('en_core_web_sm')
 # Chargement/définition des variables utiles
 
 stopwords = sp.Defaults.stop_words
-
-#stopwords = set(stopwords.words('english'))
-
-#wordnet_map = {"N": wordnet.NOUN}
-#train_sents = brown.tagged_sents(categories='learned')
-#t0 = nltk.DefaultTagger('NN')
-#t1 = nltk.UnigramTagger(train_sents, backoff=t0)
-#t2 = nltk.BigramTagger(train_sents, backoff=t1)
-
-#lemmatizer = WordNetLemmatizer()
 
 list_100_tags = pickle.load(open('utils/list_100_tags.pkl', 'rb'))
 list_short_tags = pickle.load(open('utils/list_short_tags.pkl', 'rb'))
