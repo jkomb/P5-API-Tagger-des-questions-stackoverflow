@@ -5,12 +5,13 @@ from utils import unsup_preprocess_from_raw_text, sup_preprocess_from_raw_text, 
 app = Flask(__name__)
 
 
-@app.route('/')
+@app.route('/', methods=['POST', 'GET'])
 def home():
-    return render_template('api_page.html')
+    message_prediction = ''
+    return render_template('api_page.html', message_prediction=message_prediction)
 
 
-@app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['POST', 'GET'])
 def predict():
 
     inputs = request.form.to_dict()
@@ -41,7 +42,7 @@ def predict():
                              f"\tPart du modèle supervisé dans la prédiction : {sup_part}%\n" \
                              f"\tPart du modèle non-supervisé dans la prédiction : {unsup_part}%\n"
 
-    return render_template('api_page.html', statement=message_prediction)
+    return render_template('api_page.html', message_prediction=message_prediction)
 
 
 if __name__ == "__main__":

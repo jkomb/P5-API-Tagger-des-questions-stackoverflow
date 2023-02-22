@@ -117,6 +117,7 @@ def unsup_preprocess_from_raw_text(inputs):
 def sup_preprocess_from_raw_text(inputs):
 
     cleaned_inputs = unsup_preprocess_from_raw_text(inputs)
+    cleaned_inputs = cleaned_inputs[:256]
     encoded_inputs = bert.encode(cleaned_inputs)
 
     return encoded_inputs
@@ -152,17 +153,15 @@ def sup_predictions(bert_encoded_input):
     """
         But:
             Prédire les tags à partir du modèle supervisé
-
         Argument:
             bert_encoded_input : vecteur généré par le modèle BERT à partir de liste de tokens issue
                                  du nettoyage de la saisie de l'utilisateur
-
         Valeur retournée:
-            relevant_tags : liste des tags prédits
+            tags_pred : liste des tags prédits
     """
     sup_features = pd.DataFrame(bert_encoded_input.reshape(1, -1))
     y_pred = sup_model.predict(sup_features)
     tags_pred = mlb.inverse_transform(y_pred)
-    tags_pred = list(tags_pred[0])
+    tags_pred = list(tags_pred)
 
     return tags_pred
