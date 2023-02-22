@@ -8,7 +8,15 @@ import re
 import pandas as pd
 from bs4 import BeautifulSoup
 
+
 import nltk
+
+
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('brown')
+
+    
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords, wordnet, brown
 from nltk.stem import WordNetLemmatizer
