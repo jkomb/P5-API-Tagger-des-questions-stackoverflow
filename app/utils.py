@@ -6,6 +6,7 @@ import pickle
 import contractions
 import re
 import pandas as pd
+from bs4 import BeautifulSoup
 
 import nltk
 from nltk.tokenize import word_tokenize
@@ -20,7 +21,7 @@ bert = pickle.load(open('models/bert.pkl', 'rb'))
 sup_model = pickle.load(open('models/sup_model_fitted.pkl', 'rb'))
 unsup_model = pickle.load(open('models/unsup_model_fitted.pkl', 'rb'))
 
-mlb = pickle.load(open('models/mlb.pkl', 'rb'))
+mlb = pickle.load(open('models/mlb_comp.pkl', 'rb'))
 
 # Chargement/définition des variables utiles
 
@@ -37,10 +38,29 @@ lemmatizer = WordNetLemmatizer()
 list_100_tags = pickle.load(open('utils/list_100_tags.pkl', 'rb'))
 list_short_tags = pickle.load(open('utils/list_short_tags.pkl', 'rb'))
 
-id2word = pickle.load(open('utils/id2word.pkl', 'rb'))
-dict_topics_20_words = pickle.load(open('utils/dict_topics_20_words.pkl', 'rb'))
+id2word = pickle.load(open('utils/id2word_last.pkl', 'rb'))
+dict_topics_20_words = pickle.load(open('utils/dict_20_words_last.pkl', 'rb'))
 
 # Définition des fonctions auxilliaires
+
+
+def keep_text_from_tags(html, tags=('p')):
+    """
+        But :
+            Analyse le contenu HTML et extrait le contenu textuel des balises passées en argument.
+        Arguments :
+            htmt : document au format HTML.
+            tags : list des balises dont l'on veut extraire le contenu textuel.
+        Valeur retournée :
+            Une chaîne de caractère issue de la jointure des contenus textuels des différentes balises analysées.
+    """
+    soup = BeautifulSoup(html, "lxml")
+    list_text = list()
+
+    for tag in tags:
+        list_text.extend([x.get_text() for x in soup.find_all(tag)])
+
+    return ' '.join(list_text)
 
 
 def remove_punct(text):
@@ -102,7 +122,8 @@ def unsup_preprocess_from_raw_text(inputs):
         Valeur retournée:
             cleaned_inputs : liste de tokens nettoyés
     """
-    cleaned_inputs = str(inputs).lower()
+    cleaned_inputs = keep_text_from_tags(inputs)
+    cleaned_inputs = str(cleaned_inputs).lower()
     cleaned_inputs = contractions.fix(cleaned_inputs)
     cleaned_inputs = remove_punct(cleaned_inputs)
     cleaned_inputs = word_tokenize(cleaned_inputs)
@@ -159,9 +180,9 @@ def sup_predictions(bert_encoded_input):
         Valeur retournée:
             tags_pred : liste des tags prédits
     """
-    sup_features = pd.DataFrame(bert_encoded_input.reshape(1, -1))
+    sup_features = pd.DataFrame(bert_encoded_input)
     y_pred = sup_model.predict(sup_features)
     tags_pred = mlb.inverse_transform(y_pred)
-    tags_pred = list(tags_pred)
+    tags_pred = list(tags_pred[0])
 
     return tags_pred

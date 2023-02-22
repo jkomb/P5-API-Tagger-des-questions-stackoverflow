@@ -11,11 +11,11 @@
 
     <h1 style="text-align:center;color: rgb(0, 0, 0);font-family: inherit;">Prédicition de tags pour des questions à poser sur le site <a href="https://stackoverflow.com/">STACKOVERFLOW</a></h1><br><br>
     <hr style="color: rgb(0, 0, 0);">
-    <h2 style="color: rgb(0, 0, 0);">Veuillez entrer ci-dessous les informations qui nous permettront de vous aider à tagger votre post...</h2>
-    <h3 style="color: rgb(0, 0, 0);">Un post avec les bons tags c'est un post qui a <b>plus de chances d'être vu</b> par les personnes coméptentes et donc de <b>recevoir des réponses pertinentes!!</b></h3>
+    <h2 style="color: rgb(0, 0, 0);">Veuillez entrer ci-dessous les informations qui nous permettront de vous aider à tagger votre post !</h2>
+    <h3 style="color: rgb(0, 0, 0);">Un post avec les bons tags c'est un post qui a <b>plus de chances d'être vu</b> par les personnes coméptentes et donc de <b>recevoir des réponses pertinentes !!</b></h3>
     <h4 style="color: rgb(0,0,0);">Pour générer les tags, veuillez saisir ci-dessous le titre de votre post ainsi que votre question (soyez précis et exhaustif dans la description de votre problème et son contexte) : </h4>
 
-    <form style="margin-top: 50px;padding-left:200px;" action="{{url_for('predict')}}" method="post">
+    <form style="margin-top: 50px;padding-left:200px;" action="{{ url_for('predict') }}" method="post">
         <h2>Titre du post</h2><br>
         <input type="text" placeholder="Saisissez le titre de votre post" required='required' name="title_input">
 
@@ -25,13 +25,10 @@
 
         <br><br>
 
-        <button style="margin-left:00px" type="submit" class="btn btn-outline-danger btn-lg"><u>Générer les tags !</u></button><br><br>
-
-        <b style="color: rgb(0, 0, 0);font-size: 22px;">{{message_prediction}}</b>
+        <button style="margin-left:00px" type="submit" class="btn btn-outline-danger btn-lg"><b>Générer les tags !</b></button><br><br>
 
     </form>
     <br>
-
+    <b style="color: rgb(0, 0, 0);font-size: 22px;">{{ message_prediction }}</b>
 </body>
-
 </html>
