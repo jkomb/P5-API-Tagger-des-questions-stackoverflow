@@ -1,4 +1,0 @@
-brown
-stopwords
-wordnet
-

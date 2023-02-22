@@ -8,18 +8,14 @@ import re
 import pandas as pd
 from bs4 import BeautifulSoup
 
+import spacy
 
-import nltk
 
+#import nltk
 
-nltk.download('stopwords')
-nltk.download('wordnet')
-nltk.download('brown')
-
-    
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords, wordnet, brown
-from nltk.stem import WordNetLemmatizer
+#from nltk.tokenize import word_tokenize
+#from nltk.corpus import stopwords, wordnet, brown
+#from nltk.stem import WordNetLemmatizer
 
 # Chargement des modèles
 
@@ -30,17 +26,21 @@ unsup_model = pickle.load(open('models/unsup_model_fitted.pkl', 'rb'))
 
 mlb = pickle.load(open('models/mlb_comp.pkl', 'rb'))
 
+sp = spacy.load('en_core_web_sm')
+
 # Chargement/définition des variables utiles
 
-stopwords = set(stopwords.words('english'))
+stopwords = sp.Defaults.stop_words
 
-wordnet_map = {"N": wordnet.NOUN}
-train_sents = brown.tagged_sents(categories='learned')
-t0 = nltk.DefaultTagger('NN')
-t1 = nltk.UnigramTagger(train_sents, backoff=t0)
-t2 = nltk.BigramTagger(train_sents, backoff=t1)
+#stopwords = set(stopwords.words('english'))
 
-lemmatizer = WordNetLemmatizer()
+#wordnet_map = {"N": wordnet.NOUN}
+#train_sents = brown.tagged_sents(categories='learned')
+#t0 = nltk.DefaultTagger('NN')
+#t1 = nltk.UnigramTagger(train_sents, backoff=t0)
+#t2 = nltk.BigramTagger(train_sents, backoff=t1)
+
+#lemmatizer = WordNetLemmatizer()
 
 list_100_tags = pickle.load(open('utils/list_100_tags.pkl', 'rb'))
 list_short_tags = pickle.load(open('utils/list_short_tags.pkl', 'rb'))
@@ -111,11 +111,11 @@ def pos_tag_nouns(tokens):
 
             Liste des tokens de type "nom"
     """
-    pos_tagged_tokens = t2.tag(tokens)
+    #pos_tagged_tokens = t2.tag(tokens)
 
-    nouns = [word for (word, pos_tag) in pos_tagged_tokens if (pos_tag[0] in wordnet_map.keys())]
+    #nouns = [word for (word, pos_tag) in pos_tagged_tokens if (pos_tag[0] in wordnet_map.keys())]
 
-    return nouns
+    return None
 
 # Définition des fonctions principales
 
@@ -133,12 +133,14 @@ def unsup_preprocess_from_raw_text(inputs):
     cleaned_inputs = str(cleaned_inputs).lower()
     cleaned_inputs = contractions.fix(cleaned_inputs)
     cleaned_inputs = remove_punct(cleaned_inputs)
-    cleaned_inputs = word_tokenize(cleaned_inputs)
+    cleaned_inputs = [word.text for word in sp(cleaned_inputs)]
     cleaned_inputs = [word for word in cleaned_inputs if not word in stopwords]
-    cleaned_inputs = [word for word in cleaned_inputs if (len(word) > 3 or word in list_short_tags)]
-    cleaned_inputs = [word for word in cleaned_inputs if word in list_100_tags]
-    cleaned_inputs = pos_tag_nouns(cleaned_inputs)
-    cleaned_inputs = [lemmatizer.lemmatize(word) for word in cleaned_inputs]
+    cleaned_inputs = [word for word in cleaned_inputs if (21 >= len(word) > 3 or word in list_short_tags)]
+    cleaned_inputs = ' '.join(cleaned_inputs)
+    cleaned_inputs = [noun.text for noun in sp(cleaned_inputs).noun_chunks]
+    cleaned_inputs = ' '.join(cleaned_inputs)
+    cleaned_inputs = [word.lemma_ for word in sp(cleaned_inputs)]
+
     return cleaned_inputs
 
 
